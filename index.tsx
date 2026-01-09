@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Component } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppTab, UserPreferences, IdentityTag } from './types';
 import Navbar from './components/Navbar';
@@ -9,13 +8,29 @@ import AgeGate from './components/AgeGate';
 import IdentitySetup from './components/IdentitySetup';
 
 // Simple Error Boundary for production stability
-class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean}> {
-  constructor(props: {children: React.ReactNode}) {
+interface ErrorBoundaryProps {
+  children?: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+// Fixed: Defined explicit state property and switched to named Component import to resolve 'state' and 'props' access errors.
+// This ensures the TypeScript compiler correctly identifies the members inherited from the React Component base class.
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  // Explicitly declaring state resolves the "Property 'state' does not exist" error in some environments.
+  public state: ErrorBoundaryState = { hasError: false };
+
+  constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
   }
+
+  // Handle errors by updating state
   static getDerivedStateFromError() { return { hasError: true }; }
+
   render() {
+    // Accessing this.state and this.props now correctly leverages the generic types from the Component class.
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
